@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>카테고리별 기술 목록보기</h1>
+    <hr />
+    <select id="category" onchange="onCategoryChange()">
+    </select>
+    <select>
+    </select>
+    <script>
+        async function fetchCategory() {
+            //download
+            let response = await fetch("/api/category");
+            //ajax통신 시작
+            //기다려줘야하니까 await 사용 , async 붙이기
+            let body = await response.json(); // json -> js object
+
+            //dom 제어
+            let categoryEl = document.querySelector("#category");
+            for (c of body) {
+                //foreach로 사용
+                
+                let optionEl = document.createElement("option");
+                //옵션 엘리멘트 만들어줌
+                optionEl.value = c.id;
+                //pk넣어줌
+                optionEl.innerHTML = c.name;
+                //innerHTML써도되고 innerTEXT써도 됨
+                categoryEl.append(optionEl);
+            }
+            //console.log(body);
+        }
+        
+        //스크립트가 위로 간다면 화면에 안그려질것
+        //download
+        async function fetchTech(categoryId) {
+
+         
+            //옵션 초기화
+             let techEl = document.querySelector("#tech");
+             techEl.innerHTML = ""; // Clear previous options
+            //페인
+
+            let response = await fetch("/api/tech?categoryId=" + categoryId);
+            let body = await response.json();
+           
+           
+            for (t of body) {
+                let optionEl = document.createElement("option");
+                optionEl.value = t.id;
+                optionEl.innerHTML = t.name;
+                techEl.append(optionEl);
+            }
+
+        }
+
+//onchange 이벤트-> 카테고리를 찾음 -> 카테고리 아이디 찾음
+
+        async function onCategoryChange() {
+            let categoryEl = document.querySelector("#category");
+            let selectedCategoryId = categoryEl.value;
+            fetchTech(selectedCategoryId);
+        }
+        // 화면 초기화
+        fetchCategory();
+        fetchTech(1);
+    </script>
+</body>
+</html>
